@@ -2,11 +2,11 @@
 
 ### Technologies used:
 
--   UI: React + Next.js + Chakra UI
--   GraphQL Client: URQL/Apollo
--   Server: Express + Apollo-Server-GraphQL + TypeGraphQL
--   ORM: MikroORM/TypeORM
--   Database: PostgreSQL, Redis
+-   **UI:** React + Next.js + Chakra UI
+-   **GraphQL Client:** URQL/Apollo
+-   **Server:** Express + Apollo-Server-GraphQL + TypeGraphQL
+-   **ORM:** MikroORM/TypeORM
+-   **Database:** PostgreSQL, Redis
 
 ### Author:
 
