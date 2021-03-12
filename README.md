@@ -1,19 +1,12 @@
-# Simple Reddit clone
+# Simple FullStack Reddit clone
 
 ### Technologies used:
 
--   TypesScript
--   React
--   Chakra UI
--   Node.js
--   Express
--   Apollo/URQL
--   GraphQL
--   TypeGraphQL
--   PostgreSQL
--   TypeORM/MikroORM
--   Redis
--   Next.js
+-   UI: React + Next.js + Chakra UI
+-   GraphQL Client: URQL/Apollo
+-   Server: Express + Apollo-Server-GraphQL + TypeGraphQL
+-   ORM: MikroORM/TypeORM
+-   Database: PostgreSQL, Redis
 
 ### Author:
 
