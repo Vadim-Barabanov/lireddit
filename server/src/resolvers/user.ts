@@ -1,5 +1,5 @@
 import { User } from '../entities/User'
-import { MyContext } from 'src/types'
+import { MyContext } from '../types'
 import {
     Arg,
     Ctx,
@@ -10,9 +10,11 @@ import {
     Resolver,
 } from 'type-graphql'
 import argon2 from 'argon2'
-import { COOKIE_NAME } from '../constants'
+import { COOKIE_NAME, FORGOT_PASSWORD_PREFIX } from '../constants'
 import { UsernamePasswordInput } from './UsernamePasswordInput'
 import { validateRegister } from '../utils/validateRegister'
+import { sendEmail } from '../utils/sendEmail'
+import { v4 } from 'uuid'
 
 @ObjectType()
 class UserResponse {
@@ -34,10 +36,75 @@ class FieldError {
 
 @Resolver()
 export class UserResolver {
+    @Mutation(() => UserResponse)
+    async changePassword(
+        @Arg('token') token: string,
+        @Arg('newPassword') newPassword: string,
+        @Ctx() { redis, em, req }: MyContext
+    ): Promise<UserResponse> {
+        if (newPassword.length <= 2) {
+            return {
+                errors: [
+                    {
+                        field: 'newPassword',
+                        message: 'length must be greater than 2',
+                    },
+                ],
+            }
+        }
+        const key = FORGOT_PASSWORD_PREFIX + token
+        const userId = await redis.get(key)
+        if (!userId) {
+            return {
+                errors: [{ field: 'token', message: 'token expired' }],
+            }
+        }
+
+        const user = await em.findOne(User, { id: parseInt(userId) })
+
+        if (!user) {
+            return {
+                errors: [{ field: 'token', message: 'user no longer exists' }],
+            }
+        }
+
+        user.password = await argon2.hash(newPassword)
+        await em.persistAndFlush(user)
+
+        await redis.del(key)
+
+        // log in user after change password
+        req.session.userId = user.id
+
+        return { user }
+    }
+
     @Mutation(() => Boolean)
-    async forgotPassword() {
-        // @Ctx() { em }: MyContext // @Arg('email') email: string,
-        // const user = await em.findOne(User, {email})
+    async forgotPassword(
+        @Ctx() { em, redis }: MyContext,
+        @Arg('email') email: string
+    ) {
+        const user = await em.findOne(User, { email })
+        if (!user) {
+            // email is not in the db
+            // do nothing security reasons
+            return true
+        }
+
+        const token = v4()
+
+        await redis.set(
+            FORGOT_PASSWORD_PREFIX + token,
+            user.id,
+            'ex',
+            1000 * 60 * 60 * 24 * 3 // 3 days
+        )
+
+        await sendEmail(
+            user.email,
+            'Change password',
+            `<a href="http://localhost:3000/change-password/${token}">Reset password</a>`
+        )
         return true
     }
 
