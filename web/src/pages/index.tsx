@@ -5,16 +5,8 @@ import { usePostsQuery } from '../generated/graphql'
 import { createUrqlClient } from '../utils/createUrqlClient'
 import NextLink from 'next/link'
 import { Link } from '@chakra-ui/layout'
-import {
-    Box,
-    Button,
-    Flex,
-    Heading,
-    IconButton,
-    Stack,
-    Text,
-} from '@chakra-ui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons'
+import { Box, Button, Flex, Heading, Stack, Text } from '@chakra-ui/react'
+import { UpdootSection } from '../components/UpdootSection'
 
 const Index: React.FC<{}> = ({}) => {
     const [variables, setVariables] = useState({
@@ -39,23 +31,7 @@ const Index: React.FC<{}> = ({}) => {
                 <Stack spacing={8}>
                     {data.posts.posts.map((p) => (
                         <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
-                            <Flex
-                                mr={4}
-                                direction="column"
-                                align="center"
-                                justify="center">
-                                <IconButton
-                                    aria-label="chevron-up"
-                                    size="xs"
-                                    icon={<ChevronUpIcon />}
-                                />
-                                <Text>5</Text>
-                                <IconButton
-                                    aria-label="chevron-down"
-                                    size="xs"
-                                    icon={<ChevronDownIcon />}
-                                />
-                            </Flex>
+                            <UpdootSection post={p} />
                             <Box>
                                 <Heading fontSize="xl">{p.title}</Heading>
                                 <Text mt={4}>{p.textSnippet + ' ...'}</Text>
