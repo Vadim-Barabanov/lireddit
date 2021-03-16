@@ -34,6 +34,9 @@ const Index: React.FC<{}> = ({}) => {
                             <UpdootSection post={p} />
                             <Box>
                                 <Heading fontSize="xl">{p.title}</Heading>
+                                <Text fontStyle="italic">
+                                    posted by {p.creator.username}
+                                </Text>
                                 <Text mt={4}>{p.textSnippet + ' ...'}</Text>
                             </Box>
                         </Flex>
