@@ -1,9 +1,10 @@
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import { Flex, IconButton, Text } from '@chakra-ui/react'
 import React from 'react'
+import { PostSnippetFragment } from '../generated/graphql'
 
 interface UpdootSectionProps {
-    post: any
+    post: PostSnippetFragment
 }
 
 export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
