@@ -16,6 +16,7 @@ import {
 import { MyContext } from '../types'
 import { isAuth } from '../middleware/isAuth'
 import { getConnection } from 'typeorm'
+import { Updoot } from '../entities/Updoot'
 
 @InputType()
 class PostInput {
@@ -52,21 +53,52 @@ export class PostResolver {
         const { userId } = req.session
         const isUpdoot = value !== -1
         const realValue = isUpdoot ? 1 : -1
+        const updoot = await Updoot.findOne({ where: { postId, userId } })
 
-        await getConnection().query(
-            `
-            START TRANSACTION;
+        if (updoot && updoot.value !== realValue) {
+            await getConnection().transaction(async (tm) => {
+                // Update existing row
+                await tm.query(
+                    `
+                    update updoot
+                    set value = $1
+                    where "postId" = $2 and "userId" = $3
+                    `,
+                    [realValue, postId, userId]
+                )
 
-            insert into updoot ("userId", "postId", value)
-            values(${userId}, ${postId}, ${realValue});
+                // Update post's points value
+                await tm.query(
+                    `
+                    update post
+                    set points = points + $1
+                    where id = $2;
+                    `,
+                    [2 * realValue, postId]
+                )
+            })
+        } else if (!updoot) {
+            await getConnection().transaction(async (tm) => {
+                // Create new row
+                await tm.query(
+                    `
+                    insert into updoot ("userId", "postId", value)
+                    values($1, $2, $3);
+                    `,
+                    [userId, postId, realValue]
+                )
 
-            update post
-            set points = points + ${realValue}
-            where id = ${postId};
-
-            COMMIT;
-            `
-        )
+                // Update post's points value
+                await tm.query(
+                    `
+                    update post
+                    set points = points + $1
+                    where id = $2;
+                    `,
+                    [realValue, postId]
+                )
+            })
+        }
 
         return true
     }
@@ -102,8 +134,6 @@ export class PostResolver {
             `,
             replacements
         )
-
-        console.log('POSTS: ', posts)
 
         return {
             posts: posts.slice(0, realLimit),
