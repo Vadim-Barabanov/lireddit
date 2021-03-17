@@ -188,8 +188,21 @@ export class PostResolver {
     }
 
     @Mutation(() => Boolean)
-    async deletePost(@Arg('id') id: number): Promise<boolean> {
+    @UseMiddleware(isAuth)
+    async deletePost(
+        @Arg('id', () => Int) id: number,
+        @Ctx() { req }: MyContext
+    ): Promise<boolean> {
+        const post = await Post.findOne(id)
+        if (!post) return false
+        if (post.creatorId !== req.session.userId) {
+            throw new Error('Not authorized')
+        }
+        await Updoot.delete({ postId: id })
         await Post.delete(id)
+        // In way you want to delete updoot row using CASCADE
+        // Put {onDelete: 'CASCADE'}, on updoot column
+        // await Post.delete({id, creatorId: req.session.userId})
         return true
     }
 }
