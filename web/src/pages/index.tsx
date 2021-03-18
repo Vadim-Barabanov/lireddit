@@ -1,25 +1,12 @@
 import { withUrqlClient } from 'next-urql'
 import React, { useState } from 'react'
 import { Layout } from '../components/Layout'
-import {
-    useDeletePostMutation,
-    useMeQuery,
-    usePostsQuery,
-} from '../generated/graphql'
+import { usePostsQuery } from '../generated/graphql'
 import { createUrqlClient } from '../utils/createUrqlClient'
 import NextLink from 'next/link'
 import { Link } from '@chakra-ui/layout'
-import {
-    Box,
-    Button,
-    Flex,
-    Heading,
-    IconButton,
-    Stack,
-    Text,
-} from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Stack, Text } from '@chakra-ui/react'
 import { UpdootSection } from '../components/UpdootSection'
-import { DeleteIcon, EditIcon } from '@chakra-ui/icons'
 import { EditDeletePostButtons } from '../components/EditDeletePostButtons'
 
 const Index: React.FC<{}> = ({}) => {
@@ -27,9 +14,14 @@ const Index: React.FC<{}> = ({}) => {
         limit: 10,
         cursor: null as null | string,
     })
-    const [{ data, fetching }] = usePostsQuery({ variables })
+    const [{ data, error, fetching }] = usePostsQuery({ variables })
     if (!fetching && !data) {
-        return <div>You got no posts for some reason</div>
+        return (
+            <div>
+                <div>You got no posts for some reason</div>
+                <div>{error?.message}</div>
+            </div>
+        )
     }
     return (
         <Layout>
