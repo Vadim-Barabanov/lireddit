@@ -21,9 +21,9 @@ import { createUpdootLoader } from './utils/createUpdootLoader'
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
-        database: 'lireddit2',
+        database: 'lireddit',
         username: 'postgres',
-        password: '1404',
+        password: '12345',
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
@@ -51,7 +51,7 @@ const main = async () => {
                 secure: __prod__, // cookie only works in https
                 sameSite: 'lax', // csrf
             },
-            secret: 'qwertyqwerty',
+            secret: 'The quick brown fox jumps over the lazy dog',
             resave: false,
             saveUninitialized: false,
         })
