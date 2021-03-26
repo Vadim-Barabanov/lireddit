@@ -21,9 +21,9 @@ import { createUpdootLoader } from './utils/createUpdootLoader'
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
-        database: 'lireddit',
+        database: 'lireddit2',
         username: 'postgres',
-        password: '12345',
+        password: '1404',
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],

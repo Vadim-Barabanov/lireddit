@@ -1,21 +1,23 @@
-import { withUrqlClient } from 'next-urql'
-import React, { useState } from 'react'
+import React from 'react'
 import { Layout } from '../components/Layout'
 import { usePostsQuery } from '../generated/graphql'
-import { createUrqlClient } from '../utils/createUrqlClient'
 import NextLink from 'next/link'
 import { Link } from '@chakra-ui/layout'
 import { Box, Button, Flex, Heading, Stack, Text } from '@chakra-ui/react'
 import { UpdootSection } from '../components/UpdootSection'
 import { EditDeletePostButtons } from '../components/EditDeletePostButtons'
+import { withApollo } from '../utils/withApollo'
 
 const Index: React.FC<{}> = ({}) => {
-    const [variables, setVariables] = useState({
-        limit: 10,
-        cursor: null as null | string,
+    const { data, error, loading, fetchMore, variables } = usePostsQuery({
+        variables: {
+            limit: 10,
+            cursor: null,
+        },
+        notifyOnNetworkStatusChange: true,
     })
-    const [{ data, error, fetching }] = usePostsQuery({ variables })
-    if (!fetching && !data) {
+
+    if (!loading && !data) {
         return (
             <div>
                 <div>You got no posts for some reason</div>
@@ -23,9 +25,19 @@ const Index: React.FC<{}> = ({}) => {
             </div>
         )
     }
+
+    const fetchingMoreHandler = () => {
+        fetchMore({
+            variables: {
+                limit: variables?.limit,
+                cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
+            },
+        })
+    }
+
     return (
         <Layout>
-            {!data && fetching ? (
+            {!data && loading ? (
                 <div>Loading...</div>
             ) : (
                 <Stack spacing={8}>
@@ -70,16 +82,8 @@ const Index: React.FC<{}> = ({}) => {
             {data && data.posts.hasMore ? (
                 <Flex>
                     <Button
-                        onClick={() => {
-                            setVariables({
-                                limit: variables.limit,
-                                cursor:
-                                    data.posts.posts[
-                                        data.posts.posts.length - 1
-                                    ].createdAt,
-                            })
-                        }}
-                        isLoading={fetching}
+                        onClick={fetchingMoreHandler}
+                        isLoading={loading}
                         m="auto"
                         my={8}>
                         Load more
@@ -90,4 +94,4 @@ const Index: React.FC<{}> = ({}) => {
     )
 }
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index)
+export default withApollo({ ssr: true })(Index)
