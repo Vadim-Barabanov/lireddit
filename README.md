@@ -2,27 +2,42 @@
 
 ### Technologies used:
 
--   **UI:** React + Next.js + Chakra UI
--   **GraphQL Client:** URQL/Apollo
--   **Server:** Express + Apollo-Server-GraphQL + TypeGraphQL
--   **ORM:** MikroORM/TypeORM
--   **Database:** PostgreSQL, Redis
+| Part of App        | Technology                                  |
+| ------------------ | ------------------------------------------- |
+| **UI**             | React, Next.js, Chakra UI                   |
+| **GraphQL Client** | Apollo                                      |
+| **Server**         | Express, Apollo-Server-GraphQL, TypeGrpahQL |
+| **ORM**            | TypeORM                                     |
+| **Database**       | PostgreSQL, Redis                           |
+
+### Description:
+
+This is simple a fullstack project that copying some Reddit functionality. You can create, delete and update your own posts, see posts of other people and updoot or downdoot them.
+
+User functionality:
+
+-   Register with email, username and password
+-   Login with email or username and password
+-   Reset password by following link, that was sent on his(her) email
+-   CRUD operations with post
+-   Upvote/Downvote post
 
 ### How to run project on your PC:
 
 Requirements:
 
-    -   node.js
-    -   yarn
-    -   PostgreSQL
-    -   Redis
-    -   Create "lireddit" data base, or change its name in `server/src/index.ts`
+-   Node.js + yarn
+-   PostgreSQL, Redis
+-   Fill your data (DB name, pass etc.) in `server/src/index.ts`
 
-1. Clone repo on your machine
-2. cd into server folder and run `yarn watch` and after compiling run `yarn dev`
-3. cd into web folder and run `yarn dev`
+Steps:
+
+1. `git clone https://github.com/Vadim-Barabanov/lireddit.git`
+2. `cd lireddit/server && yarn watch` , Ctrl + c after compiling and then `yarn dev`
+3. `cd lireddit/web && yarn dev`
 4. Open browser and go to -> `localhost:3000/`
-5. If you want to check grapqhql -> `localhost:4000/grapqhql`
+
+In case you want to check grapqhql -> `localhost:4000/grapqhql`
 
 ### Author:
 
